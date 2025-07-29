@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="./mbweb.css" />
+  <title>MeConf 咪呼</title>
+</head>
+
+<body>
+  <div class="content">
+    <div class="video" id="vdiv">
+      <video id="remote-video" width="100%" autoplay disablepictureinpicture playsinline poster="no">
+        <p>Your browser doesn't support HTML5 video.</p>
+      </video>
+      <div class="video-local" id="lvdiv">
+        <video id="local-video" width="100%" muted autoplay disablepictureinpicture playsinline poster="no">
+          <p>Your browser doesn't support HTML5 video.</p>
+        </video>
+      </div>
+    </div> 
+    
+    <div class="infobox" id="infobox">
+      <div id="callerdiv" class="caller">
+        <label id="alertmsg"></label>
+        <button id="vcallanswer" class="btn"><img src="img/vcall.svg" width="48px"></button>
+        <button id="callanswer" class="btn"><img src="img/acall.svg" width="48px"></button>        
+        <button id="reject" class="btn"><img src="img/hang.svg" width="48px"></button> 
+      </div>
+
+      <div id="calleediv" class="callee">        
+        <input type="search" style="font-size: xx-large;text-align:center;margin: 5px;"
+          placeholder="被叫号码" size="8" id="callee"></input>
+        <input type="checkbox" id="vcallcheck" checked hidden></input>
+        <button id="vcall" disabled autofocus class="btn"><img src="img/vcall.svg" width="48px"></button>        
+        <button id="call" disabled class="btn"><img src="img/acall.svg" width="48px"></button>        
+      </div>
+    </div>    
+    <div class="statusbox" id="regdiv">
+      <div class="logo" id="about">
+        <img src="img/logo.png" width="30"/>      
+      </div>
+      <div>        
+        <label id="regstat">⚠️ 等待注册</label>
+      </div>
+      <div style="margin-right: 10px;color: bisque;">
+        <label id="status"></label>
+      </div>      
+    </div>    
+    <div id="callctrl" class="callctrl">
+      <button id="hangup"  class="btn"><img src="img/hang.svg" width="40px"></button> 
+      <button id="micctrl"  class="btn"><img src="img/mic.svg" width="25px"></button>
+      <button id="camctrl"  class="btn"><img src="img/cam.svg" width="25px"></button>      
+    </div>  
+    <div id="dialpad" class="dialpad">
+      <div>
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+      </div>
+      <div>
+        <button>4</button>
+        <button>5</button>
+        <button>6</button>
+      </div>
+      <div>
+        <button>7</button>
+        <button>8</button>
+        <button>9</button>
+      </div>
+      <div>
+        <button>*</button>
+        <button>0</button>
+        <button>#</button>
+      </div>
+    </div>     
+    <div class="toolbtns">
+      <div>
+        <label for="eMsg"><img src="img/msg.svg" width="32px"></label>
+        <input type="checkbox" id="eMsg" hidden></input>   
+      </div>
+      <div>        
+        <button class="btn" id="padbtn"><img src="img/dialpad.svg" width="32px"/></button>
+      </div>  
+    </div>       
+    <div class="msg">  
+      <textarea id="msgbox" rows="10" cols="30" readonly hidden placeholder="暂无消息"></textarea>      
+      <input type="text" placeholder="文本消息，Enter发送" hidden disabled
+        maxlength="70" size="30" id="msg"></input>
+    </div>    
+    <div style="position: fixed;bottom: 5px;right: 5px;z-index:1;">
+      <a href="config.html" target="_self">⚙️ 配置</a>
+    </div> 
+  </div>
+  <script src="./mbphone.bundle.js"></script>
+</body>
+</html>

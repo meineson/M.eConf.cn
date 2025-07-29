@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>配置</title>  
+  <style>
+    .regdiv{
+      display: flex;
+      flex-direction:column;
+      align-items:center;
+      width: 100%;
+      justify-content: center;  
+      gap: 5px;
+    }    
+    .radio-group {
+      display: block;
+    }
+    .main{
+      margin: 30px;
+      display: flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .alert{
+      color: red;
+    }
+    .btn{
+      font-weight: bolder;
+      font-size: larger;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="regdiv" id="regdiv">
+    <h3>SIP账号配置：</h3>
+    <input type="text" placeholder="IP / Domain" id="srvaddr"></input>
+    <input type="text" placeholder="[ws|wss]://ip:port空白自动" value="" id="wsaddr"></input>
+    <input type="text" placeholder="sip号码" value="" text="d" id="uname"></input>
+    <input type="password" placeholder="sip密码" value="" id="upwd"></input>
+  </div>    
+  <div class="main">
+    <h3>音频输入设备：</h3>
+    <div class="radio-group" id="aidev">      
+    </div>
+    <h3>音频输出设备：</h3>
+    <div class="radio-group" id="aodev">      
+    </div>
+    <h3>视频输入设备：</h3>
+    <div class="radio-group" id="videv">      
+    </div>
+    <div>
+      </br>
+      <label class="alert" id="alert"></label></br>
+      <button id="saveconfig" class="btn">💾 保存</button>
+      <button id="cancel" class="btn">✖️ 取消</button>
+    </div>
+  </div>
+
+  <script>
+    const isMobile = window.matchMedia("only screen and (max-width: 600px)").matches;
+    var deviceConfig = {audioin:'default', audioout:'default', videoin:isMobile?'user':'desktop'};
+    var server = {
+      domain: '',
+      sipPort: 8060,
+      wsServers: '',  
+    };
+    var user = {
+        disName: '',
+        name: '',
+        authName: '',
+        authPwd: '',
+        regExpires: 180,
+        lastCallee: ''
+    }    
+
+    //read config or use default
+    if(localStorage.getItem('user')){
+      user = JSON.parse(localStorage.getItem('user'))
+    }
+    if(localStorage.getItem('server')){
+      server = JSON.parse(localStorage.getItem('server'))
+    }    
+    if(localStorage.getItem('devices')){
+      deviceConfig = JSON.parse(localStorage.getItem('devices'))
+    }
+    console.log("config readed:", user, server, deviceConfig);  
+
+    const unameInput = document.getElementById("uname");
+    const upwdInput = document.getElementById("upwd");
+    const srvInput = document.getElementById("srvaddr");
+    const wsInput = document.getElementById("wsaddr");
+    srvInput.value = server.domain;
+    wsInput.value = server.wsServers;
+    unameInput.value = user.name;
+    upwdInput.value = user.authPwd;
+
+    function saveConfig(){
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('server', JSON.stringify(server)); 
+      localStorage.setItem('devices', JSON.stringify(deviceConfig));
+      console.log("config saved:", user, server, deviceConfig);  
+    }
+    
+    function buildDeviceOption(device){
+      var radioElm;
+      var rid = device.deviceId;
+      if(device.deviceId === "" || device.label === ""){       
+        radioElm = `<input type='radio' id='${device.kind}-default' name='${device.kind}' value='default'>`;
+        radioElm += `<label for='${device.kind}-default'>默认设备</label></input></br>`;
+      }else{
+        if(device.kind === "audioinput" && isMobile){
+          //android use name to avoid deviceid change everytime
+          radioElm = `<input type='radio' id='${device.kind}-${device.label}' name='${device.kind}' value='${device.label}'>`;
+          radioElm += `<label for='${device.kind}-${device.label}'>${device.label}</label></input></br>`;
+        }else{
+          radioElm = `<input type='radio' id='${device.kind}-${rid}' name='${device.kind}' value='${device.deviceId}'>`;
+          radioElm += `<label for='${device.kind}-${rid}'>${device.label}</label></input></br>`;
+        }
+      }
+      return radioElm;
+    }
+
+    if(!navigator.mediaDevices){
+      alert("无法打开音视频设备。");
+      infoLb.innerText = '无法打开设备，无法呼叫';
+    }
+
+    navigator.mediaDevices.getUserMedia({audio: {deviceId: undefined}})
+    .then(stream => {
+      navigator.mediaDevices?.enumerateDevices()
+      .then(devices => {
+        devices.forEach(device => {
+          console.log(`${device.kind}: ${device.label} (ID: ${device.deviceId})`);
+          if(device.kind === 'audioinput'){
+            document.getElementById("aidev").innerHTML += buildDeviceOption(device);
+          }else if(device.kind === 'audiooutput'){
+            document.getElementById("aodev").innerHTML += buildDeviceOption(device);
+          }else if(device.kind === 'videoinput' && !isMobile){
+            document.getElementById("videv").innerHTML += buildDeviceOption(device);
+          }
+        });  
+        
+        if(isMobile){
+          document.getElementById("videv").innerHTML += 
+            buildDeviceOption({kind:"videoinput", label:"前置摄像头", deviceId:"user"})      
+          document.getElementById("videv").innerHTML += 
+            buildDeviceOption({kind:"videoinput", label:"后置摄像头", deviceId:"environment"})      
+        }else{
+          //add desktop share video input
+          document.getElementById("videv").innerHTML += 
+            buildDeviceOption({kind:"videoinput", label:"桌面分享", deviceId:"desktop"})      
+        }
+      }).then(()=>{
+        //update ui select
+        try{
+          document.getElementById("audioinput-"+deviceConfig.audioin).checked = true;
+          document.getElementById("audiooutput-"+deviceConfig.audioout).checked = true;
+          document.getElementById("videoinput-"+deviceConfig.videoin).checked = true;
+        }catch{
+          document.getElementById("alert").innerHTML = "本机设备有变化，请重新选择，以免呼叫失败。";
+        }
+      }); 
+            
+      stream.getTracks().forEach(track => track.stop());
+    })
+    .catch(error => {
+      alert("没有可用的音视频设备，或未授权访问！");
+    });         
+
+    document.getElementById("saveconfig").addEventListener('click', function(){
+      server.domain = srvInput.value.trim();
+      if(wsInput.value.trim() == ""){
+        server.wsServers = "ws://"+server.domain+":5066";
+        wsInput.value = server.wsServers;
+      }else{
+        server.wsServers = wsInput.value;
+      }
+      
+      user.disName = unameInput.value.trim();
+      user.name = unameInput.value.trim();
+      user.authName = unameInput.value.trim();
+      user.authPwd = upwdInput.value.trim();
+      
+      document.getElementsByName("audioinput").forEach(item => {
+        if(item.checked) {
+          console.log(item.id);
+          deviceConfig.audioin = item.id.split("-")[1];
+        }
+      });
+      document.getElementsByName("audiooutput").forEach(item => {
+        if(item.checked) {
+          console.log(item.id);
+          deviceConfig.audioout = item.id.split("-")[1];
+        }
+      });
+      document.getElementsByName("videoinput").forEach(item => {
+        if(item.checked) {
+          console.log(item.id);
+          deviceConfig.videoin = item.id.split("-")[1];
+        }
+      });
+
+      saveConfig();
+      document.getElementById("alert").innerHTML = "设备选择已保存。";
+      window.location.replace("index.html");  //history goback maybe not reload      
+    })
+
+    document.getElementById("cancel").addEventListener('click', function(){
+      window.location.replace("index.html"); 
+    });
+  </script>
+</body>
+</html>
