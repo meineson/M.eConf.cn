@@ -1,0 +1,20 @@
+{
+  "name": "MeConf",
+  "version": "1.3.3",
+  "description": "MeConf by mbstudio.cn",
+  "ProductName": "MeConf 咪呼",
+  "license": "MIT",
+  "author": "meineson <meineson@gmail.com> (https://mbstudio.cn)",
+  "homepage": "https://mbstudio.cn",
+  "copyright": "Copyright © 2025",
+  "scripts": {
+    "webdev": "webpack --mode=development",
+    "webrel": "webpack --mode=production",
+    "web": "npm run webrel && mkdir -p ./dist && tar zcvf ./dist/MeConf_web.tgz index.html config.html mbphone.bundle.js miniweb.js mbweb.css favicon.ico img/*"
+  },
+  "devDependencies": {
+    "terser-webpack-plugin": "^5.3.14",
+    "webpack": "^5.100.2",
+    "webpack-cli": "^6.0.1"
+  }
+}

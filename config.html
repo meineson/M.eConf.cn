@@ -36,8 +36,8 @@
 <body>
   <div class="regdiv" id="regdiv">
     <h3>SIP账号配置：</h3>
-    <input type="text" placeholder="IP / Domain" id="srvaddr"></input>
-    <input type="text" placeholder="[ws|wss]://ip:port空白自动" value="" id="wsaddr"></input>
+    <input type="text" placeholder="IP / Domain" id="srvaddr" disabled></input>
+    <input type="text" placeholder="[ws|wss]://ip:port空白自动" disabled value="" id="wsaddr"></input>
     <input type="text" placeholder="sip号码" value="" text="d" id="uname"></input>
     <input type="password" placeholder="sip密码" value="" id="upwd"></input>
   </div>    
@@ -80,9 +80,13 @@
     if(localStorage.getItem('user')){
       user = JSON.parse(localStorage.getItem('user'))
     }
-    if(localStorage.getItem('server')){
-      server = JSON.parse(localStorage.getItem('server'))
-    }    
+    // if(localStorage.getItem('server')){
+      // server = JSON.parse(localStorage.getItem('server'))         
+    // }    
+    server = {
+      domain: 'sip.simton.call:8060',  
+      wsServers: 'wss://simton.econf.cn:8443',
+    };   
     if(localStorage.getItem('devices')){
       deviceConfig = JSON.parse(localStorage.getItem('devices'))
     }
