@@ -36,7 +36,7 @@ var lastCallee = [];
 var infoMsg;
 var lastCaller = '';  //incoming caller
 
-const VERSION = "SIMTON MeConf v1.3.3"
+const VERSION = "SIMTON MeConf v1.3.3-simton"
 const MAX_BITRATE = 2*1024*1024;  //2M
 const VIDEO_MAX = {width:1280, height:720};
 const VIDEOHINTS = "motion";  //canbe detail,motion,text
