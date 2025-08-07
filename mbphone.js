@@ -21,6 +21,9 @@ const iceServers =
   'urls': 'turn:turn.econf.cn:13478',
   'username': "simton",
   'credential': "santong123",
+},
+{
+  'urls': 'stun:stun.l.google.com:19302'
 }
 ];
 
@@ -159,11 +162,7 @@ function readConfig(){
     user = JSON.parse(localStorage.getItem('user'))
   }
   if(localStorage.getItem('server')){
-    // server = JSON.parse(localStorage.getItem('server'))
-    server = {
-      domain: 'sip.simton.call:8060',  
-      wsServers: 'wss://simton.econf.cn:8443',
-    };
+    server = JSON.parse(localStorage.getItem('server'))
   }
   if(localStorage.getItem('devices')){
     deviceConfig = JSON.parse(localStorage.getItem('devices'))
@@ -726,10 +725,12 @@ camBtn.onclick = function(){
   if(muteS.video){
     callSession.unmute({video: true});
     camBtn.style.filter = "";
+    lvDiv.style.visibility = "";
   }else{
     callSession.mute({video: true});
     lvDiv.style.backgroundImage = 'url(img/mic.svg)';
     camBtn.style.filter = "grayscale(100%)";
+    lvDiv.style.visibility = "hidden";
   }
 }
 
