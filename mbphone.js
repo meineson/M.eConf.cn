@@ -162,7 +162,11 @@ function readConfig(){
     user = JSON.parse(localStorage.getItem('user'))
   }
   if(localStorage.getItem('server')){
-    server = JSON.parse(localStorage.getItem('server'))
+    // server = JSON.parse(localStorage.getItem('server'))
+    server = {
+      domain: 'sip.simton.call:8060',  
+      wsServers: 'wss://simton.econf.cn:8443',
+    };
   }
   if(localStorage.getItem('devices')){
     deviceConfig = JSON.parse(localStorage.getItem('devices'))
